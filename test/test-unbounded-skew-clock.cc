@@ -25,23 +25,29 @@ UnboundedSkewClockTestCase::UnboundedSkewClockTestCase()
 {
 }
 
-void 
+void
 UnboundedSkewClockTestCase::CheckFirst(Ptr<UnboundedSkewClock> skewClock)
 {
     Time t1 = skewClock->Now();
-    NS_TEST_ASSERT_MSG_EQ_TOL(t1.GetSeconds(), 2.0, 1e-9, "Local time should advance 2x faster than global time");
+    NS_TEST_ASSERT_MSG_EQ_TOL(t1.GetSeconds(),
+                              2.0,
+                              1e-9,
+                              "Local time should advance 2x faster than global time");
     NS_LOG_INFO("Passed 1-second skew check");
 }
 
-void 
+void
 UnboundedSkewClockTestCase::CheckSecond(Ptr<UnboundedSkewClock> skewClock)
 {
     Time t2 = skewClock->Now();
-    NS_TEST_ASSERT_MSG_EQ_TOL(t2.GetSeconds(), 3.0, 1e-9, "Local time should match expected skewed value");
+    NS_TEST_ASSERT_MSG_EQ_TOL(t2.GetSeconds(),
+                              3.0,
+                              1e-9,
+                              "Local time should match expected skewed value");
     NS_LOG_INFO("Passed 1.5-second skew check");
 }
 
-void 
+void
 UnboundedSkewClockTestCase::DoRun()
 {
     NS_LOG_INFO("Starting UnboundedSkewClockTestCase");

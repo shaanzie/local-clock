@@ -9,52 +9,52 @@
 #ifndef LOCAL_CLOCK_HELPER_H
 #define LOCAL_CLOCK_HELPER_H
 
-#include "ns3/object-factory.h"
-#include "ns3/node.h"
-#include "ns3/node-container.h"
 #include "ns3/local-clock.h"
+#include "ns3/node-container.h"
+#include "ns3/node.h"
+#include "ns3/object-factory.h"
 
 namespace ns3
 {
 
 /**
- * \brief Unified helper to aggregate any LocalClock implementation to nodes.
+ * @brief Unified helper to aggregate any LocalClock implementation to nodes.
  */
 class LocalClockHelper
 {
-public:
+  public:
     LocalClockHelper();
 
     /**
-     * \brief Set the exact type of clock to create (e.g., "ns3::UnboundedSkewClock").
+     * @brief Set the exact type of clock to create (e.g., "ns3::UnboundedSkewClock").
      *
-     * \param type The TypeId string of the derived clock class.
+     * @param type The TypeId string of the derived clock class.
      */
     void SetClockType(std::string type);
 
     /**
-     * \brief Set an attribute for the chosen clock type.
+     * @brief Set an attribute for the chosen clock type.
      *
-     * \param name The name of the attribute to set.
-     * \param value The value of the attribute to set.
+     * @param name The name of the attribute to set.
+     * @param value The value of the attribute to set.
      */
     void SetAttribute(std::string name, const AttributeValue& value);
 
     /**
-     * \brief Install the configured clock on the provided node.
+     * @brief Install the configured clock on the provided node.
      *
-     * \param node The node to install the clock on.
+     * @param node The node to install the clock on.
      */
     void Install(Ptr<Node> node) const;
 
     /**
-     * \brief Install the configured clock on all nodes in the container.
+     * @brief Install the configured clock on all nodes in the container.
      *
-     * \param c The container of nodes.
+     * @param c The container of nodes.
      */
     void Install(NodeContainer c) const;
 
-private:
+  private:
     ObjectFactory m_factory; //!< Object factory to create the specific clock instances.
 };
 

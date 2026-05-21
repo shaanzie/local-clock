@@ -101,14 +101,14 @@ ReplayClock::SetLocalClock(Time ptime)
 void
 ReplayClock::Shift(int64_t epoch_diff, int64_t max_epochs)
 {
-    int64_t  index     = 0;
+    int64_t index = 0;
     uint64_t rawBitmap = m_bitmap;
-    uint64_t bitmap    = rawBitmap;
+    uint64_t bitmap = rawBitmap;
 
     while (bitmap > 0)
     {
-        uint64_t currentBitMask   = bitmap & -bitmap;
-        int64_t  newOffsetAtIndex = GetOffsetAtIndex(index, max_epochs) + epoch_diff;
+        uint64_t currentBitMask = bitmap & -bitmap;
+        int64_t newOffsetAtIndex = GetOffsetAtIndex(index, max_epochs) + epoch_diff;
 
         if (newOffsetAtIndex >= max_epochs)
         {
@@ -131,45 +131,45 @@ ReplayClock::MergeSameEpoch(const ReplayClock& o_replayClock, int64_t u_epsilon)
 {
     ReplayClock temp = *this;
 
-    uint64_t myBits     = m_bitmap;
-    uint64_t otherBits  = o_replayClock.m_bitmap;
-    uint64_t iterator   = myBits | otherBits;
+    uint64_t myBits = m_bitmap;
+    uint64_t otherBits = o_replayClock.m_bitmap;
+    uint64_t iterator = myBits | otherBits;
     uint64_t resultBits = iterator;
 
-    temp.m_offsets  = 0;
+    temp.m_offsets = 0;
     temp.m_counters = 0;
 
-    uint32_t left_index  = 0;
+    uint32_t left_index = 0;
     uint32_t right_index = 0;
-    uint32_t new_index   = 0;
+    uint32_t new_index = 0;
 
     while (iterator > 0)
     {
-        uint64_t mask     = iterator & -iterator;
-        bool     hasLeft  = (myBits    & mask) != 0;
-        bool     hasRight = (otherBits & mask) != 0;
+        uint64_t mask = iterator & -iterator;
+        bool hasLeft = (myBits & mask) != 0;
+        bool hasRight = (otherBits & mask) != 0;
 
         int64_t new_offset;
         int64_t new_counter;
 
         if (hasLeft && hasRight)
         {
-            int64_t leftOff  = GetOffsetAtIndex(left_index, u_epsilon);
+            int64_t leftOff = GetOffsetAtIndex(left_index, u_epsilon);
             int64_t rightOff = o_replayClock.GetOffsetAtIndex(right_index, u_epsilon);
 
             if (leftOff < rightOff)
             {
-                new_offset  = leftOff;
+                new_offset = leftOff;
                 new_counter = GetCounterAtIndex(left_index, u_epsilon);
             }
             else if (rightOff < leftOff)
             {
-                new_offset  = rightOff;
+                new_offset = rightOff;
                 new_counter = o_replayClock.GetCounterAtIndex(right_index, u_epsilon);
             }
             else
             {
-                new_offset  = leftOff;
+                new_offset = leftOff;
                 new_counter = std::max(GetCounterAtIndex(left_index, u_epsilon),
                                        o_replayClock.GetCounterAtIndex(right_index, u_epsilon));
             }
@@ -178,13 +178,13 @@ ReplayClock::MergeSameEpoch(const ReplayClock& o_replayClock, int64_t u_epsilon)
         }
         else if (hasLeft)
         {
-            new_offset  = GetOffsetAtIndex(left_index, u_epsilon);
+            new_offset = GetOffsetAtIndex(left_index, u_epsilon);
             new_counter = GetCounterAtIndex(left_index, u_epsilon);
             left_index++;
         }
         else
         {
-            new_offset  = o_replayClock.GetOffsetAtIndex(right_index, u_epsilon);
+            new_offset = o_replayClock.GetOffsetAtIndex(right_index, u_epsilon);
             new_counter = o_replayClock.GetCounterAtIndex(right_index, u_epsilon);
             right_index++;
         }
@@ -209,15 +209,17 @@ ReplayClock::MergeSameEpoch(const ReplayClock& o_replayClock, int64_t u_epsilon)
 bool
 ReplayClock::EqualOffset(const ReplayClock& o_replayClock)
 {
-    return o_replayClock.m_maxph->Now() == m_maxph->Now() &&
-           o_replayClock.m_bitmap     == m_bitmap      &&
-           o_replayClock.m_offsets    == m_offsets;
+    return o_replayClock.m_maxph->Now() == m_maxph->Now() && o_replayClock.m_bitmap == m_bitmap &&
+           o_replayClock.m_offsets == m_offsets;
 }
 
 bool
 ReplayClock::CheckOverflow(uint64_t combinedBitmap, int64_t max_epochs) const
 {
-    if (max_epochs <= 0) return false;
+    if (max_epochs <= 0)
+    {
+        return false;
+    }
     int64_t s = std::bit_width(static_cast<uint64_t>(max_epochs));
     return (std::popcount(combinedBitmap) * s) > 64;
 }
@@ -238,19 +240,21 @@ ReplayClock::GetOffsetAtIndex(int64_t index, int64_t u_epsilon) const
 void
 ReplayClock::InsertOffsetAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 {
-    int64_t  s    = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t pos  = s * index;
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    uint64_t pos = s * index;
     uint64_t mask = (1ULL << pos) - 1;
-    m_offsets = (m_offsets & mask) | (static_cast<uint64_t>(value) << pos) | ((m_offsets & ~mask) << s);
+    m_offsets =
+        (m_offsets & mask) | (static_cast<uint64_t>(value) << pos) | ((m_offsets & ~mask) << s);
 }
 
 void
 ReplayClock::SetOffsetAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 {
-    int64_t  s          = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t newOffsets = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, s * index, 0));
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    auto newOffsets = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, s * index, 0));
     newOffsets |= static_cast<uint64_t>(value) << (index * s);
-    newOffsets |= static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, 64 - s * (index + 1), s * (index + 1)))
+    newOffsets |= static_cast<uint64_t>(
+                      ExtractKBitsFromPositionP(m_offsets, 64 - s * (index + 1), s * (index + 1)))
                   << ((index + 1) * s);
     m_offsets = newOffsets;
 }
@@ -258,9 +262,10 @@ ReplayClock::SetOffsetAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 void
 ReplayClock::RemoveOffsetAtIndex(int64_t index, int64_t u_epsilon)
 {
-    int64_t  s          = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t newOffsets = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, s * index, 0));
-    newOffsets |= static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, 64 - s * (index + 1), s * (index + 1)))
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    auto newOffsets = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_offsets, s * index, 0));
+    newOffsets |= static_cast<uint64_t>(
+                      ExtractKBitsFromPositionP(m_offsets, 64 - s * (index + 1), s * (index + 1)))
                   << (index * s);
     m_offsets = newOffsets;
 }
@@ -275,19 +280,22 @@ ReplayClock::GetCounterAtIndex(int64_t index, int64_t u_epsilon) const
 void
 ReplayClock::InsertCounterAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 {
-    int64_t  s    = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t pos  = s * index;
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    uint64_t pos = s * index;
     uint64_t mask = (1ULL << pos) - 1;
-    m_counters = (m_counters & mask) | (static_cast<uint64_t>(value) << pos) | ((m_counters & ~mask) << s);
+    m_counters =
+        (m_counters & mask) | (static_cast<uint64_t>(value) << pos) | ((m_counters & ~mask) << s);
 }
 
 void
 ReplayClock::SetCounterAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 {
-    int64_t  s           = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t newCounters = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, s * index, 0));
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    auto newCounters =
+        static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, s * index, 0));
     newCounters |= static_cast<uint64_t>(value) << (index * s);
-    newCounters |= static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, 64 - s * (index + 1), s * (index + 1)))
+    newCounters |= static_cast<uint64_t>(
+                       ExtractKBitsFromPositionP(m_counters, 64 - s * (index + 1), s * (index + 1)))
                    << ((index + 1) * s);
     m_counters = newCounters;
 }
@@ -295,9 +303,11 @@ ReplayClock::SetCounterAtIndex(int64_t index, int64_t value, int64_t u_epsilon)
 void
 ReplayClock::RemoveCounterAtIndex(int64_t index, int64_t u_epsilon)
 {
-    int64_t  s           = std::bit_width(static_cast<uint64_t>(u_epsilon));
-    uint64_t newCounters = static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, s * index, 0));
-    newCounters |= static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, 64 - s * (index + 1), s * (index + 1)))
+    int64_t s = std::bit_width(static_cast<uint64_t>(u_epsilon));
+    auto newCounters =
+        static_cast<uint64_t>(ExtractKBitsFromPositionP(m_counters, s * index, 0));
+    newCounters |= static_cast<uint64_t>(
+                       ExtractKBitsFromPositionP(m_counters, 64 - s * (index + 1), s * (index + 1)))
                    << (index * s);
     m_counters = newCounters;
 }
@@ -312,8 +322,8 @@ void
 ReplayClock::IncrementSelfCounter(int64_t u_epsilon)
 {
     uint64_t targetMask = 1ULL << m_nodeId;
-    int64_t  idx        = 0;
-    uint64_t iterator   = m_bitmap;
+    int64_t idx = 0;
+    uint64_t iterator = m_bitmap;
 
     while (iterator > 0)
     {
@@ -332,15 +342,13 @@ ReplayClock::PrintClock(std::ostream& os, uint64_t u_epsilon)
 {
     os << m_maxph->Now().GetMicroSeconds() << " | ";
     os << std::bitset<64>(m_bitmap) << " | ";
-    int64_t  index  = 0;
+    int64_t index = 0;
     uint64_t bitmap = m_bitmap;
     while (bitmap > 0)
     {
         uint32_t processId = log2((~(bitmap ^ (~(bitmap - 1))) + 1) >> 1);
-        os << "[" << processId
-           << ":" << GetOffsetAtIndex(index, u_epsilon)
-           << ":" << GetCounterAtIndex(index, u_epsilon)
-           << "] ";
+        os << "[" << processId << ":" << GetOffsetAtIndex(index, u_epsilon) << ":"
+           << GetCounterAtIndex(index, u_epsilon) << "] ";
         bitmap &= (bitmap - 1);
         index++;
     }
@@ -350,14 +358,14 @@ ReplayClock::PrintClock(std::ostream& os, uint64_t u_epsilon)
 void
 ReplayClock::Send(int64_t u_epsilon, Time u_interval)
 {
-    int64_t pt_j     = m_localClock->Now().GetMicroSeconds();
+    int64_t pt_j = m_localClock->Now().GetMicroSeconds();
     int64_t ts_maxph = m_maxph->Now().GetMicroSeconds();
-    int64_t I        = u_interval.GetMicroSeconds();
+    int64_t I = u_interval.GetMicroSeconds();
 
-    int64_t newmaxph   = std::max(ts_maxph, pt_j);
-    int64_t currmaxt   = ts_maxph  / I;
-    int64_t newmaxt    = newmaxph  / I;
-    int64_t my_epoch   = pt_j     / I;
+    int64_t newmaxph = std::max(ts_maxph, pt_j);
+    int64_t currmaxt = ts_maxph / I;
+    int64_t newmaxt = newmaxph / I;
+    int64_t my_epoch = pt_j / I;
     int64_t max_epochs = u_epsilon / I;
 
     if (CheckOverflow(m_bitmap | (1ULL << m_nodeId), max_epochs))
@@ -374,9 +382,9 @@ ReplayClock::Send(int64_t u_epsilon, Time u_interval)
         Shift(newmaxt - currmaxt, max_epochs);
     }
 
-    bool isNew  = !(m_bitmap & (1ULL << m_nodeId));
-    m_bitmap   |= (1ULL << m_nodeId);
-    int  myIdx  = std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1));
+    bool isNew = !(m_bitmap & (1ULL << m_nodeId));
+    m_bitmap |= (1ULL << m_nodeId);
+    int myIdx = std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1));
 
     if (newmaxt == currmaxt)
     {
@@ -391,9 +399,13 @@ ReplayClock::Send(int64_t u_epsilon, Time u_interval)
             new_off = std::min(new_off, curr_off);
 
             if (new_off == curr_off)
+            {
                 IncrementCounterAtIndex(myIdx, max_epochs);
+            }
             else
+            {
                 SetCounterAtIndex(myIdx, 0, max_epochs);
+            }
 
             SetOffsetAtIndex(myIdx, new_off, max_epochs);
         }
@@ -417,14 +429,14 @@ ReplayClock::Send(int64_t u_epsilon, Time u_interval)
 void
 ReplayClock::Recv(Ptr<ReplayClock> o_replayClock, int64_t u_epsilon, Time u_interval)
 {
-    int64_t pt_j            = m_localClock->Now().GetMicroSeconds();
-    int64_t ts_local_maxph  = m_maxph->Now().GetMicroSeconds();
+    int64_t pt_j = m_localClock->Now().GetMicroSeconds();
+    int64_t ts_local_maxph = m_maxph->Now().GetMicroSeconds();
     int64_t ts_remote_maxph = o_replayClock->m_maxph->Now().GetMicroSeconds();
-    int64_t I               = u_interval.GetMicroSeconds();
+    int64_t I = u_interval.GetMicroSeconds();
 
-    int64_t newmaxph   = std::max({ts_local_maxph, ts_remote_maxph, pt_j});
-    int64_t newmaxt    = newmaxph / I;
-    int64_t my_epoch   = pt_j    / I;
+    int64_t newmaxph = std::max({ts_local_maxph, ts_remote_maxph, pt_j});
+    int64_t newmaxt = newmaxph / I;
+    int64_t my_epoch = pt_j / I;
     int64_t max_epochs = u_epsilon / I;
 
     if (CheckOverflow(m_bitmap | o_replayClock->m_bitmap | (1ULL << m_nodeId), max_epochs))
@@ -433,52 +445,65 @@ ReplayClock::Recv(Ptr<ReplayClock> o_replayClock, int64_t u_epsilon, Time u_inte
         return;
     }
 
-    uint64_t orig_local_bitmap  = m_bitmap;
+    uint64_t orig_local_bitmap = m_bitmap;
     uint64_t orig_local_offsets = m_offsets;
-    int64_t  orig_local_maxt    = ts_local_maxph / I;
+    int64_t orig_local_maxt = ts_local_maxph / I;
 
-    uint64_t orig_remote_bitmap  = o_replayClock->m_bitmap;
+    uint64_t orig_remote_bitmap = o_replayClock->m_bitmap;
     uint64_t orig_remote_offsets = o_replayClock->m_offsets;
-    int64_t  orig_remote_maxt    = ts_remote_maxph / I;
+    int64_t orig_remote_maxt = ts_remote_maxph / I;
 
     int64_t origLocalSelfCounter = 0;
     if (m_bitmap & (1ULL << m_nodeId))
-        origLocalSelfCounter = GetCounterAtIndex(
-            std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1)), max_epochs);
+    {
+        origLocalSelfCounter =
+            GetCounterAtIndex(std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1)), max_epochs);
+    }
 
     int64_t origRemoteSelfCounter = 0;
     if (o_replayClock->m_bitmap & (1ULL << m_nodeId))
+    {
         origRemoteSelfCounter = o_replayClock->GetCounterAtIndex(
-            std::popcount(o_replayClock->m_bitmap & ((1ULL << m_nodeId) - 1)), max_epochs);
+            std::popcount(o_replayClock->m_bitmap & ((1ULL << m_nodeId) - 1)),
+            max_epochs);
+    }
 
     Ptr<ReplayClock> shiftedRemote = CreateObject<ReplayClock>();
-    shiftedRemote->m_bitmap   = o_replayClock->m_bitmap;
-    shiftedRemote->m_offsets  = o_replayClock->m_offsets;
+    shiftedRemote->m_bitmap = o_replayClock->m_bitmap;
+    shiftedRemote->m_offsets = o_replayClock->m_offsets;
     shiftedRemote->m_counters = o_replayClock->m_counters;
     shiftedRemote->Shift(newmaxt - orig_remote_maxt, max_epochs);
 
     Shift(newmaxt - orig_local_maxt, max_epochs);
     MergeSameEpoch(*shiftedRemote, max_epochs);
 
-    bool is_eq_local  = orig_local_maxt  == newmaxt && orig_local_bitmap  == m_bitmap && orig_local_offsets  == m_offsets;
-    bool is_eq_remote = orig_remote_maxt == newmaxt && orig_remote_bitmap == m_bitmap && orig_remote_offsets == m_offsets;
+    bool is_eq_local = orig_local_maxt == newmaxt && orig_local_bitmap == m_bitmap &&
+                       orig_local_offsets == m_offsets;
+    bool is_eq_remote = orig_remote_maxt == newmaxt && orig_remote_bitmap == m_bitmap &&
+                        orig_remote_offsets == m_offsets;
 
     int64_t newSelfCounter;
     if (is_eq_local && is_eq_remote)
+    {
         newSelfCounter = std::max(origLocalSelfCounter, origRemoteSelfCounter) + 1;
+    }
     else if (is_eq_local)
+    {
         newSelfCounter = origLocalSelfCounter + 1;
+    }
     else if (is_eq_remote)
+    {
         newSelfCounter = origRemoteSelfCounter + 1;
+    }
     else
     {
-        m_counters     = 0;
+        m_counters = 0;
         newSelfCounter = 0;
     }
 
-    bool  isNew  = !(m_bitmap & (1ULL << m_nodeId));
-    m_bitmap    |= (1ULL << m_nodeId);
-    int   myIdx  = std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1));
+    bool isNew = !(m_bitmap & (1ULL << m_nodeId));
+    m_bitmap |= (1ULL << m_nodeId);
+    int myIdx = std::popcount(m_bitmap & ((1ULL << m_nodeId) - 1));
 
     int64_t myOffset = newmaxt - my_epoch;
 

@@ -1,9 +1,9 @@
 # Local Clock ns-3 module
 
 This is an [ns-3](https://www.nsnam.org "ns-3 Website") module that can be used
-to instantiate node-local clocks on ns-3 that exhibit skews. We also provide examples 
+to instantiate node-local clocks on ns-3 that exhibit skews. We also provide examples
 of different clocks that can be used to provide different clock properties to a simulation.
-Scheduling is still done through the Simulator, and is purely for observing the clocks. 
+Scheduling is still done through the Simulator, and is purely for observing the clocks.
 A model for scheduling is being worked on in [MR2619](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/2619).
 
 Quick links:
@@ -117,8 +117,8 @@ Computing.
 
 Publications:
 
-* Ishaan Kiran Lagwankar and Sandeep S. Kulkarni. 2025. Clock Skew Models for ns-3. In Proceedings of the 2025 
-International Conference on ns-3 (ICNS3 '25). Association for Computing Machinery, New York, NY, USA, 
+* Ishaan Kiran Lagwankar and Sandeep S. Kulkarni. 2025. Clock Skew Models for ns-3. In Proceedings of the 2025
+International Conference on ns-3 (ICNS3 '25). Association for Computing Machinery, New York, NY, USA,
 70–81. https://doi.org/10.1145/3747204.3747208
 * Ishaan Lagwankar and Sandeep S Kulkarni. 2024. Replay Clocks. In Proceedings of the 25th International Conference on 
 Distributed Computing and Networking (ICDCN '24). Association for Computing Machinery, New York, NY, USA, 114–123. 

@@ -7,7 +7,9 @@
  */
 
 #include "vector-clock.h"
+
 #include "ns3/log.h"
+
 #include <algorithm>
 
 namespace ns3
@@ -58,7 +60,7 @@ VectorClock::Tick()
 std::map<uint32_t, uint64_t>
 VectorClock::Update(const std::map<uint32_t, uint64_t>& msgVector)
 {
-    for (auto const& [key, value] : msgVector)
+    for (const auto& [key, value] : msgVector)
     {
         m_vector[key] = std::max(m_vector[key], value);
     }

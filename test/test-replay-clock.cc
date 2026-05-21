@@ -32,11 +32,25 @@ class TestLocalClock : public LocalClock
         return tid;
     }
 
-    TestLocalClock() : m_ptime(NanoSeconds(0)) {}
-    TestLocalClock(Time time) : m_ptime(time) {}
+    TestLocalClock()
+        : m_ptime(NanoSeconds(0))
+    {
+    }
 
-    virtual Time Now() override { return m_ptime; }
-    virtual void SetLocalClock(Time time) override { m_ptime = time; }
+    TestLocalClock(Time time)
+        : m_ptime(time)
+    {
+    }
+
+    Time Now() override
+    {
+        return m_ptime;
+    }
+
+    void SetLocalClock(Time time) override
+    {
+        m_ptime = time;
+    }
 
   private:
     Time m_ptime;
@@ -45,7 +59,10 @@ class TestLocalClock : public LocalClock
 class ReplayClockTestCase : public TestCase
 {
   public:
-    ReplayClockTestCase(std::string name) : TestCase(name) {}
+    ReplayClockTestCase(std::string name)
+        : TestCase(name)
+    {
+    }
 
     void CheckParams(Ptr<ReplayClock> rc,
                      Ptr<TestLocalClock> hlc,
@@ -54,8 +71,8 @@ class ReplayClockTestCase : public TestCase
                      uint64_t counters)
     {
         NS_TEST_ASSERT_MSG_EQ(rc->GetHLC()->Now(), hlc->Now(), "HLC mismatch!");
-        NS_TEST_ASSERT_MSG_EQ(rc->GetBitmap(),   bitmap,   "Bitmap mismatch!");
-        NS_TEST_ASSERT_MSG_EQ(rc->GetOffsets(),  offsets,  "Offsets mismatch!");
+        NS_TEST_ASSERT_MSG_EQ(rc->GetBitmap(), bitmap, "Bitmap mismatch!");
+        NS_TEST_ASSERT_MSG_EQ(rc->GetOffsets(), offsets, "Offsets mismatch!");
         NS_TEST_ASSERT_MSG_EQ(rc->GetCounters(), counters, "Counters mismatch!");
     }
 };
@@ -63,7 +80,11 @@ class ReplayClockTestCase : public TestCase
 class InitCase : public ReplayClockTestCase
 {
   public:
-    InitCase() : ReplayClockTestCase("Testing initialization parameters.") {}
+    InitCase()
+        : ReplayClockTestCase("Testing initialization parameters.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<TestLocalClock> hlc = CreateObject<TestLocalClock>();
@@ -76,14 +97,18 @@ class InitCase : public ReplayClockTestCase
 class OffsetCase1 : public ReplayClockTestCase
 {
   public:
-    OffsetCase1() : ReplayClockTestCase("Testing offset init functionality.") {}
+    OffsetCase1()
+        : ReplayClockTestCase("Testing offset init functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<TestLocalClock> hlc = CreateObject<TestLocalClock>(MicroSeconds(200));
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
-        rc->SetAttribute("HLC",      PointerValue(hlc));
-        rc->SetAttribute("Bitmap",   UintegerValue(13));
-        rc->SetAttribute("Offsets",  UintegerValue(49408));
+        rc->SetAttribute("HLC", PointerValue(hlc));
+        rc->SetAttribute("Bitmap", UintegerValue(13));
+        rc->SetAttribute("Offsets", UintegerValue(49408));
         rc->SetAttribute("Counters", UintegerValue(2));
         CheckParams(rc, hlc, 13, 49408, 2);
     }
@@ -92,7 +117,11 @@ class OffsetCase1 : public ReplayClockTestCase
 class OffsetCase2 : public ReplayClockTestCase
 {
   public:
-    OffsetCase2() : ReplayClockTestCase("Testing offset get functionality.") {}
+    OffsetCase2()
+        : ReplayClockTestCase("Testing offset get functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
@@ -104,7 +133,11 @@ class OffsetCase2 : public ReplayClockTestCase
 class OffsetCase3 : public ReplayClockTestCase
 {
   public:
-    OffsetCase3() : ReplayClockTestCase("Testing offset set functionality.") {}
+    OffsetCase3()
+        : ReplayClockTestCase("Testing offset set functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
@@ -117,7 +150,11 @@ class OffsetCase3 : public ReplayClockTestCase
 class OffsetCase4 : public ReplayClockTestCase
 {
   public:
-    OffsetCase4() : ReplayClockTestCase("Testing offset remove functionality.") {}
+    OffsetCase4()
+        : ReplayClockTestCase("Testing offset remove functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
@@ -130,49 +167,61 @@ class OffsetCase4 : public ReplayClockTestCase
 class ShiftCase : public ReplayClockTestCase
 {
   public:
-    ShiftCase() : ReplayClockTestCase("Testing Shift functionality.") {}
+    ShiftCase()
+        : ReplayClockTestCase("Testing Shift functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<TestLocalClock> hlc = CreateObject<TestLocalClock>(MicroSeconds(200));
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
-        rc->SetAttribute("HLC",    PointerValue(hlc));
+        rc->SetAttribute("HLC", PointerValue(hlc));
         rc->SetAttribute("Bitmap", UintegerValue(13));
         rc->SetAttribute("Offsets", UintegerValue(49408));
 
         rc->Shift(50, 100);
         rc->GetHLC()->SetLocalClock(MicroSeconds(250));
 
-        NS_TEST_EXPECT_MSG_EQ(rc->GetHLC()->Now(),  MicroSeconds(250), "HLC didn't update");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetBitmap(),      13ULL,             "Bitmap changed during shift");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetOffsets(),     875058ULL,         "Shifted offsets mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetCounters(),    0ULL,              "Counters should be zero after shift");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetHLC()->Now(), MicroSeconds(250), "HLC didn't update");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetBitmap(), 13ULL, "Bitmap changed during shift");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetOffsets(), 875058ULL, "Shifted offsets mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetCounters(), 0ULL, "Counters should be zero after shift");
     }
 };
 
 class MergeSameEpochCase : public ReplayClockTestCase
 {
   public:
-    MergeSameEpochCase() : ReplayClockTestCase("Testing MergeSameEpoch functionality.") {}
+    MergeSameEpochCase()
+        : ReplayClockTestCase("Testing MergeSameEpoch functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<ReplayClock> rcA = CreateObject<ReplayClock>();
-        rcA->SetAttribute("Bitmap",  UintegerValue(13));
+        rcA->SetAttribute("Bitmap", UintegerValue(13));
         rcA->SetAttribute("Offsets", UintegerValue(49408));
 
         Ptr<ReplayClock> rcB = CreateObject<ReplayClock>();
-        rcB->SetAttribute("Bitmap",  UintegerValue(4));
+        rcB->SetAttribute("Bitmap", UintegerValue(4));
         rcB->SetAttribute("Offsets", UintegerValue(0));
 
         rcA->MergeSameEpoch(*rcB, 100);
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetOffsets(),  49152ULL, "Merge offset mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetCounters(), 0ULL,     "Merge counter mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetOffsets(), 49152ULL, "Merge offset mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetCounters(), 0ULL, "Merge counter mismatch");
     }
 };
 
 class SendCase : public ReplayClockTestCase
 {
   public:
-    SendCase() : ReplayClockTestCase("Testing Send functionality.") {}
+    SendCase()
+        : ReplayClockTestCase("Testing Send functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<TestLocalClock> pt = CreateObject<TestLocalClock>();
@@ -182,26 +231,30 @@ class SendCase : public ReplayClockTestCase
         hlc->SetLocalClock(MicroSeconds(200));
 
         Ptr<ReplayClock> rc = CreateObject<ReplayClock>();
-        rc->SetAttribute("NodeId",    UintegerValue(2));
+        rc->SetAttribute("NodeId", UintegerValue(2));
         rc->SetAttribute("LocalClock", PointerValue(pt));
-        rc->SetAttribute("HLC",       PointerValue(hlc));
-        rc->SetAttribute("Bitmap",    UintegerValue(13));
-        rc->SetAttribute("Offsets",   UintegerValue(49408));
-        rc->SetAttribute("Counters",  UintegerValue(2));
+        rc->SetAttribute("HLC", PointerValue(hlc));
+        rc->SetAttribute("Bitmap", UintegerValue(13));
+        rc->SetAttribute("Offsets", UintegerValue(49408));
+        rc->SetAttribute("Counters", UintegerValue(2));
 
         rc->Send(1000, MicroSeconds(10));
 
         NS_TEST_EXPECT_MSG_EQ(rc->GetHLC()->Now(), MicroSeconds(700), "Send HLC mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetBitmap(),     13ULL,             "Send bitmap mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetOffsets(),    868402ULL,         "Send offset mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rc->GetCounters(),   0ULL,              "Send counters mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetBitmap(), 13ULL, "Send bitmap mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetOffsets(), 868402ULL, "Send offset mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rc->GetCounters(), 0ULL, "Send counters mismatch");
     }
 };
 
 class RecvCase : public ReplayClockTestCase
 {
   public:
-    RecvCase() : ReplayClockTestCase("Testing Recv functionality.") {}
+    RecvCase()
+        : ReplayClockTestCase("Testing Recv functionality.")
+    {
+    }
+
     void DoRun() override
     {
         Ptr<TestLocalClock> ptA = CreateObject<TestLocalClock>();
@@ -211,44 +264,45 @@ class RecvCase : public ReplayClockTestCase
         hlcA->SetLocalClock(MicroSeconds(200));
 
         Ptr<ReplayClock> rcA = CreateObject<ReplayClock>();
-        rcA->SetAttribute("NodeId",    UintegerValue(0));
+        rcA->SetAttribute("NodeId", UintegerValue(0));
         rcA->SetAttribute("LocalClock", PointerValue(ptA));
-        rcA->SetAttribute("HLC",       PointerValue(hlcA));
-        rcA->SetAttribute("Bitmap",    UintegerValue(13));
-        rcA->SetAttribute("Offsets",   UintegerValue(49408));
+        rcA->SetAttribute("HLC", PointerValue(hlcA));
+        rcA->SetAttribute("Bitmap", UintegerValue(13));
+        rcA->SetAttribute("Offsets", UintegerValue(49408));
 
         Ptr<TestLocalClock> hlcB = CreateObject<TestLocalClock>();
         hlcB->SetLocalClock(MicroSeconds(400));
 
         Ptr<ReplayClock> rcB = CreateObject<ReplayClock>();
-        rcB->SetAttribute("NodeId",  UintegerValue(2));
-        rcB->SetAttribute("HLC",     PointerValue(hlcB));
-        rcB->SetAttribute("Bitmap",  UintegerValue(18));
+        rcB->SetAttribute("NodeId", UintegerValue(2));
+        rcB->SetAttribute("HLC", PointerValue(hlcB));
+        rcB->SetAttribute("Bitmap", UintegerValue(18));
         rcB->SetAttribute("Offsets", UintegerValue(512));
 
         rcA->Recv(rcB, 1000, MicroSeconds(10));
 
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetHLC()->Now(), MicroSeconds(500),    "Recv HLC mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetBitmap(),     31ULL,                "Recv bitmap mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetOffsets(),    3827827968ULL,        "Recv offset mismatch");
-        NS_TEST_EXPECT_MSG_EQ(rcA->GetCounters(),   0ULL,                 "Recv counters mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetHLC()->Now(), MicroSeconds(500), "Recv HLC mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetBitmap(), 31ULL, "Recv bitmap mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetOffsets(), 3827827968ULL, "Recv offset mismatch");
+        NS_TEST_EXPECT_MSG_EQ(rcA->GetCounters(), 0ULL, "Recv counters mismatch");
     }
 };
 
 class ReplayClockTestSuite : public TestSuite
 {
   public:
-    ReplayClockTestSuite() : TestSuite("replay-clock", Type::UNIT)
+    ReplayClockTestSuite()
+        : TestSuite("replay-clock", Type::UNIT)
     {
-        AddTestCase(new InitCase(),           TestCase::Duration::QUICK);
-        AddTestCase(new OffsetCase1(),        TestCase::Duration::QUICK);
-        AddTestCase(new OffsetCase2(),        TestCase::Duration::QUICK);
-        AddTestCase(new OffsetCase3(),        TestCase::Duration::QUICK);
-        AddTestCase(new OffsetCase4(),        TestCase::Duration::QUICK);
-        AddTestCase(new ShiftCase(),          TestCase::Duration::QUICK);
+        AddTestCase(new InitCase(), TestCase::Duration::QUICK);
+        AddTestCase(new OffsetCase1(), TestCase::Duration::QUICK);
+        AddTestCase(new OffsetCase2(), TestCase::Duration::QUICK);
+        AddTestCase(new OffsetCase3(), TestCase::Duration::QUICK);
+        AddTestCase(new OffsetCase4(), TestCase::Duration::QUICK);
+        AddTestCase(new ShiftCase(), TestCase::Duration::QUICK);
         AddTestCase(new MergeSameEpochCase(), TestCase::Duration::QUICK);
-        AddTestCase(new SendCase(),           TestCase::Duration::QUICK);
-        AddTestCase(new RecvCase(),           TestCase::Duration::QUICK);
+        AddTestCase(new SendCase(), TestCase::Duration::QUICK);
+        AddTestCase(new RecvCase(), TestCase::Duration::QUICK);
     }
 };
 

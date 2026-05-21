@@ -25,8 +25,8 @@ build_lib(
     ${libnetwork}
   TEST_SOURCES
     test/test-lamport-clock.cc
-    test/test-replay-clock.cc    
+    test/test-replay-clock.cc
     test/test-unbounded-skew-clock.cc
     test/test-vector-clock.cc
-    
+
 )

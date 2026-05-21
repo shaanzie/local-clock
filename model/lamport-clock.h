@@ -20,7 +20,7 @@ namespace ns3
  */
 class LamportClock : public LocalClock
 {
-public:
+  public:
     /**
      * @brief Get the type ID.
      * @return The object TypeId.
@@ -32,7 +32,7 @@ public:
 
     /**
      * @brief Get the current logical time cast as an ns-3 Time object.
-     * 
+     *
      * @return Current time
      */
     Time Now() override;
@@ -45,7 +45,7 @@ public:
 
     /**
      * @brief Update the clock upon receiving a message from another node.
-     * 
+     *
      * @param messageTime The Lamport timestamp piggybacked on the incoming message.
      * @return The updated logical time counter.
      */
@@ -57,7 +57,7 @@ public:
      */
     uint64_t GetValue() const;
 
-private:
+  private:
     uint64_t m_counter; ///< The logical timestamp counter
 };
 

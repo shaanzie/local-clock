@@ -7,7 +7,9 @@
  */
 
 #include "lamport-clock.h"
+
 #include "ns3/log.h"
+
 #include <algorithm>
 
 namespace ns3
@@ -59,8 +61,8 @@ LamportClock::Update(uint64_t messageTime)
 {
     NS_LOG_FUNCTION(this << messageTime);
     m_counter = std::max(m_counter, messageTime) + 1;
-    NS_LOG_INFO("Lamport clock updated with message time " << messageTime 
-                << ". New value: " << m_counter);
+    NS_LOG_INFO("Lamport clock updated with message time " << messageTime
+                                                           << ". New value: " << m_counter);
     return m_counter;
 }
 

@@ -1,13 +1,13 @@
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/local-clock-helper.h"
+#include "ns3/network-module.h"
 #include "ns3/unbounded-skew-clock.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("UnboundedSkewClockExample");
 
-void 
+void
 CheckAndShuffleNodeClocks(Ptr<Node> nodeA, Ptr<Node> nodeB)
 {
     Ptr<UnboundedSkewClock> clockA = nodeA->GetObject<UnboundedSkewClock>();
@@ -17,19 +17,19 @@ CheckAndShuffleNodeClocks(Ptr<Node> nodeA, Ptr<Node> nodeB)
     {
         Time timeA = clockA->Now();
         Time timeB = clockB->Now();
-        
-        NS_LOG_INFO("At simulation time " << Simulator::Now().GetSeconds()
-                                          << "s: Node " << nodeA->GetId() << " clock = " << timeA.GetSeconds()
-                                          << "s, Node " << nodeB->GetId() << " clock = " << timeB.GetSeconds()
-                                          << "s");
-        
+
+        NS_LOG_INFO("At simulation time " << Simulator::Now().GetSeconds() << "s: Node "
+                                          << nodeA->GetId() << " clock = " << timeA.GetSeconds()
+                                          << "s, Node " << nodeB->GetId()
+                                          << " clock = " << timeB.GetSeconds() << "s");
+
         // Shuffle skew values
         clockA->ShuffleSkew();
         clockB->ShuffleSkew();
     }
 }
 
-int 
+int
 main(int argc, char* argv[])
 {
     LogComponentEnable("UnboundedSkewClockExample", LOG_LEVEL_INFO);
@@ -48,6 +48,6 @@ main(int argc, char* argv[])
 
     Simulator::Run();
     Simulator::Destroy();
-    
+
     return 0;
 }

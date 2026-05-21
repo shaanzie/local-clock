@@ -7,6 +7,7 @@
  */
 
 #include "local-clock-helper.h"
+
 #include "ns3/log.h"
 
 namespace ns3
@@ -45,7 +46,7 @@ LocalClockHelper::Install(Ptr<Node> node) const
 void
 LocalClockHelper::Install(NodeContainer c) const
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }
