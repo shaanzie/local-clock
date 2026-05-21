@@ -1,13 +1,13 @@
 set(source_files
     model/local-clock.cc
     model/unbounded-skew-clock.cc
-    helper/unbounded-skew-clock-helper.cc
+    helper/local-clock-helper.cc
 )
 
 set(header_files
     model/local-clock.h
     model/unbounded-skew-clock.h
-    helper/unbounded-skew-clock-helper.h
+    helper/local-clock-helper.h
 )
 
 build_lib(

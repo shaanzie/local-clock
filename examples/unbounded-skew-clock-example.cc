@@ -1,13 +1,12 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
+#include "ns3/local-clock-helper.h"
 #include "ns3/unbounded-skew-clock.h"
-#include "ns3/unbounded-skew-clock-helper.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("UnboundedSkewClockNodeExample");
+NS_LOG_COMPONENT_DEFINE("UnboundedSkewClockExample");
 
-// Standalone function to fetch the clocks from the nodes, print time, and shuffle
 void 
 CheckAndShuffleNodeClocks(Ptr<Node> nodeA, Ptr<Node> nodeB)
 {
@@ -33,12 +32,13 @@ CheckAndShuffleNodeClocks(Ptr<Node> nodeA, Ptr<Node> nodeB)
 int 
 main(int argc, char* argv[])
 {
-    LogComponentEnable("UnboundedSkewClockNodeExample", LOG_LEVEL_INFO);
+    LogComponentEnable("UnboundedSkewClockExample", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
     nodes.Create(2);
 
-    UnboundedSkewClockHelper clockHelper;
+    LocalClockHelper clockHelper;
+    clockHelper.SetClockType("ns3::UnboundedSkewClock");
     clockHelper.Install(nodes);
 
     for (int i = 0; i < 20; ++i)
