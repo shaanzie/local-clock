@@ -15,3 +15,9 @@ build_lib_example(
   SOURCE_FILES vector-clock-example.cc
   LIBRARIES_TO_LINK ${liblocal-clock}
 )
+
+build_lib_example(
+  NAME replay-clock-example
+  SOURCE_FILES replay-clock-example.cc
+  LIBRARIES_TO_LINK ${liblocal-clock}
+)
