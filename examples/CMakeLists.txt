@@ -9,3 +9,9 @@ build_lib_example(
   SOURCE_FILES lamport-clock-example.cc
   LIBRARIES_TO_LINK ${liblocal-clock}
 )
+
+build_lib_example(
+  NAME vector-clock-example
+  SOURCE_FILES vector-clock-example.cc
+  LIBRARIES_TO_LINK ${liblocal-clock}
+)
