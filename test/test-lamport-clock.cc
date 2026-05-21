@@ -9,7 +9,7 @@
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/core-module.h"
-#include "lamport-clock.h"
+#include "ns3/lamport-clock.h"
 
 using namespace ns3;
 
@@ -103,10 +103,10 @@ public:
 };
 
 LamportClockTestSuite::LamportClockTestSuite()
-    : TestSuite("lamport-clock", UNIT)
+    : TestSuite("lamport-clock", Type::UNIT)
 {
-    AddTestCase(new LamportClockBasicTest, TestCase::QUICK);
-    AddTestCase(new LamportClockUpdateTest, TestCase::QUICK);
+    AddTestCase(new LamportClockBasicTest, TestCase::Duration::QUICK);
+    AddTestCase(new LamportClockUpdateTest, TestCase::Duration::QUICK);
 }
 
 static LamportClockTestSuite slamportClockTestSuite;
