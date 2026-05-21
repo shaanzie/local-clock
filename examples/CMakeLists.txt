@@ -3,3 +3,9 @@ build_lib_example(
   SOURCE_FILES unbounded-skew-clock-example.cc
   LIBRARIES_TO_LINK ${liblocal-clock}
 )
+
+build_lib_example(
+  NAME lamport-clock-example
+  SOURCE_FILES lamport-clock-example.cc
+  LIBRARIES_TO_LINK ${liblocal-clock}
+)

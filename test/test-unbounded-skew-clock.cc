@@ -9,68 +9,68 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("ClockModelTestSuite");
 
-/**
- * @brief Test case to verify the functionality of the UnboundedSkewClock.
- */
 class UnboundedSkewClockTestCase : public TestCase
 {
   public:
-    UnboundedSkewClockTestCase()
-        : TestCase("UnboundedSkewClockTestCase")
-    {
-    }
+    UnboundedSkewClockTestCase();
+    void DoRun() override;
 
-    void DoRun() override
-    {
-        NS_LOG_INFO("Starting UnboundedSkewClockTestCase");
-
-        // Create the clock and set deterministic skew for testing
-        Ptr<UnboundedSkewClock> skewClock = CreateObject<UnboundedSkewClock>();
-        skewClock->SetSkewValues({2.0}); // deterministic skew
-
-        // At t=0, local time should be 0
-        Time t0 = skewClock->Now();
-        NS_TEST_ASSERT_MSG_EQ(t0, Seconds(0), "Initial local time should be 0");
-
-        // Schedule first check at 1 second
-        Simulator::Schedule(Seconds(1.0), [this, skewClock, t0]() {
-            Time t1 = skewClock->Now();
-            NS_TEST_ASSERT_MSG_EQ_TOL(t1.GetSeconds(),
-                                      2.0,
-                                      1e-9,
-                                      "Local time should advance 2x faster than global time");
-            NS_LOG_INFO("Passed 1-second skew check");
-        });
-
-        // Schedule second check at 1.5 seconds
-        Simulator::Schedule(Seconds(1.5), [this, skewClock, t0]() {
-            Time t2 = skewClock->Now();
-            NS_TEST_ASSERT_MSG_EQ_TOL(t2.GetSeconds(),
-                                      3.0,
-                                      1e-9,
-                                      "Local time should match expected skewed value");
-            NS_LOG_INFO("Passed 1.5-second skew check");
-        });
-
-        Simulator::Run();
-        Simulator::Destroy();
-
-        NS_LOG_INFO("Completed UnboundedSkewClockTestCase");
-    }
+  private:
+    void CheckFirst(Ptr<UnboundedSkewClock> skewClock);
+    void CheckSecond(Ptr<UnboundedSkewClock> skewClock);
 };
 
-/**
- * @brief Test suite for all clock models.
- */
+UnboundedSkewClockTestCase::UnboundedSkewClockTestCase()
+    : TestCase("UnboundedSkewClockTestCase")
+{
+}
+
+void 
+UnboundedSkewClockTestCase::CheckFirst(Ptr<UnboundedSkewClock> skewClock)
+{
+    Time t1 = skewClock->Now();
+    NS_TEST_ASSERT_MSG_EQ_TOL(t1.GetSeconds(), 2.0, 1e-9, "Local time should advance 2x faster than global time");
+    NS_LOG_INFO("Passed 1-second skew check");
+}
+
+void 
+UnboundedSkewClockTestCase::CheckSecond(Ptr<UnboundedSkewClock> skewClock)
+{
+    Time t2 = skewClock->Now();
+    NS_TEST_ASSERT_MSG_EQ_TOL(t2.GetSeconds(), 3.0, 1e-9, "Local time should match expected skewed value");
+    NS_LOG_INFO("Passed 1.5-second skew check");
+}
+
+void 
+UnboundedSkewClockTestCase::DoRun()
+{
+    NS_LOG_INFO("Starting UnboundedSkewClockTestCase");
+
+    Ptr<UnboundedSkewClock> skewClock = CreateObject<UnboundedSkewClock>();
+    skewClock->SetSkewValues({2.0});
+
+    Time t0 = skewClock->Now();
+    NS_TEST_ASSERT_MSG_EQ(t0, Seconds(0), "Initial local time should be 0");
+
+    Simulator::Schedule(Seconds(1.0), &UnboundedSkewClockTestCase::CheckFirst, this, skewClock);
+    Simulator::Schedule(Seconds(1.5), &UnboundedSkewClockTestCase::CheckSecond, this, skewClock);
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    NS_LOG_INFO("Completed UnboundedSkewClockTestCase");
+}
+
 class ClockModelTestSuite : public TestSuite
 {
   public:
-    ClockModelTestSuite()
-        : TestSuite("unbounded-skew-clock", TestSuite::Type::UNIT)
-    {
-        AddTestCase(new UnboundedSkewClockTestCase(), TestCase::Duration::QUICK);
-    }
+    ClockModelTestSuite();
 };
 
-// Register the test suite
+ClockModelTestSuite::ClockModelTestSuite()
+    : TestSuite("unbounded-skew-clock", TestSuite::Type::UNIT)
+{
+    AddTestCase(new UnboundedSkewClockTestCase(), TestCase::Duration::QUICK);
+}
+
 static ClockModelTestSuite g_clockModelTestSuite;
