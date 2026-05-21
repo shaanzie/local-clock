@@ -41,4 +41,11 @@ LocalClock::Now()
     return m_ptime;
 }
 
+void
+LocalClock::SetLocalClock(Time ptime)
+{
+    NS_LOG_FUNCTION(this << ptime);
+    m_ptime = ptime;
+}
+
 } // namespace ns3
