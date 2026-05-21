@@ -1,4 +1,4 @@
-# LoRaWAN ns-3 module
+# Local Clock ns-3 module
 
 This is an [ns-3](https://www.nsnam.org "ns-3 Website") module that can be used
 to instantiate node-local clocks on ns-3 that exhibit skews. We also provide examples 
