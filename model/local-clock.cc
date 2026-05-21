@@ -15,6 +15,7 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("LocalClock");
+NS_OBJECT_ENSURE_REGISTERED(LocalClock);
 
 TypeId
 LocalClock::GetTypeId()

@@ -1,7 +1,7 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
-#include "unbounded-skew-clock.h"
-#include "unbounded-skew-clock-helper.h"
+#include "ns3/unbounded-skew-clock.h"
+#include "ns3/unbounded-skew-clock-helper.h"
 
 using namespace ns3;
 

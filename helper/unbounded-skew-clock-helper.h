@@ -12,7 +12,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/node.h"
 #include "ns3/node-container.h"
-#include "unbounded-skew-clock.h"
+#include "ns3/unbounded-skew-clock.h"
 
 namespace ns3
 {
